@@ -1,0 +1,45 @@
+
+SELECT e.mgr_no AS managerID,
+       m.ename AS managername
+FROM employee e
+JOIN employee m ON e.mgr_no = m.empno
+GROUP BY e.mgr_no, m.ename
+HAVING COUNT(e.empno) = (
+    SELECT MAX(employeecount)
+    FROM (
+        SELECT COUNT(empno) AS employeecount
+        FROM employee
+        WHERE mgr_no IS NOT NULL
+        GROUP BY mgr_no
+    ) AS Managercounts
+);
+
+select mgr.ename as  manager_names
+from employee mgr
+where mgr.sal > (select avg(e.sal)
+                 from employee e
+                 where e.mgr_no=mgr.empno);
+
+
+select ename from employee
+where sal=(select max(sal)
+           from employee
+           where sal <( select max(sal)
+from employee)
+);
+           
+select * from employee
+where empno=(select empno
+    from incentives
+             where amt=(select max(amt)
+                                  from incentives
+                                  where amt <(select max(amt) from incentives
+                                              WHERE date like  "%01/2019")
+                                  )
+);
+select emp.ename AS emp_name
+from employee emp
+join employee mgr where emp.mgr_no=mgr.empno
+and emp.no=mgr.no;
+update employee set no=2 where empno in (101,401,501);
+

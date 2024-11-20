@@ -1,0 +1,63 @@
+CREATE DATABASE SUPPLIER_1BM23CS141;
+USE SUPPLIER_1BM23CS141;
+CREATE TABLE SUPPLIER(
+SID INT PRIMARY KEY,
+SNAME VARCHAR(20),
+CITY VARCHAR(20));
+CREATE TABLE PARTS(
+PID INT PRIMARY KEY,
+PNAME VARCHAR(20),
+COLOR VARCHAR(20));
+CREATE TABLE CATALOG(
+SID INT,
+PID INT,
+COST INT,
+FOREIGN KEY(SID) REFERENCES SUPPLIER(SID),
+FOREIGN KEY(PID) REFERENCES PARTS(PID));
+insert into Supplier values (10001, 'Acme Widget','Bangalore');
+insert into Supplier values (10002, 'Johns','Kolkata');
+insert into Supplier values (10003, 'Vimal','Mumbai');
+insert into Supplier values (10004, 'Reliance','Delhi');
+insert into Parts values (20001, 'Book','Red');
+insert into Parts values (20002, 'Pen','Red');
+insert into Parts values (20003, 'Pencil','Green');
+insert into Parts values (20004, 'Mobile','Green');
+insert into Parts values (20005, 'Charger','Black');
+insert into Catalog values (10001, 20001 , 10);
+insert into Catalog values (10001, 20002 , 10);
+insert into Catalog values (10001, 20003 , 30);
+insert into Catalog values (10001, 20004 , 10);
+insert into Catalog values (10001, 20005 , 10);
+insert into Catalog values (10002, 20001 , 10);
+insert into Catalog values (10002, 20002 , 20);
+insert into Catalog values (10003, 20003 , 30);
+insert into Catalog values (10004, 20003 , 40);
+SELECT * FROM SUPPLIER;
+SELECT * FROM PARTS ;
+SELECT * FROM CATALOG;
+SELECT DISTINCT P.PNAME
+FROM PARTS P, CATALOG C
+WHERE P.PID=C.PID;
+SELECT DISTINCT S.SNAME FROM CATALOG C,SUPPLIER S
+WHERE C.SID=S.SID
+AND NOT EXISTS (SELECT P.PID FROM PARTS P WHERE
+NOT EXISTS(SELECT C1.SID FROM CATALOG C1 WHERE C1.SID=C.SID AND C1.PID=P.PID));
+SELECT DISTINCT S.SNAME FROM CATALOG C,SUPPLIER S 
+WHERE C.SID=S.SID AND NOT EXISTS(SELECT P.PID FROM PARTS P 
+WHERE P.COLOR="Red" AND NOT EXISTS (SELECT
+C1.SID FROM CATALOG C1 WHERE C1.SID=C.SID AND C1.PID=P.PID
+AND P.COLOR="RED"));
+SELECT P.PNAME FROM PARTS P , CATALOG C,SUPPLIER S 
+WHERE P.PID=C.PID AND C.SID=S.SID 
+AND S.SNAME='Acme Widget' AND
+NOT EXISTS (SELECT * FROM CATALOG C1,SUPPLIER S1 WHERE P.PID=C1.PID AND 
+C1.SID=S1.SID
+AND S1.SNAME!="Acme Widget");
+select distinct c.sid from catalog c where c.cost>(select avg(c1.cost)
+from catalog c1 where c1.pid=c.pid);
+select p.pid,s.sname
+FROM PARTS P , CATALOG C,SUPPLIER S 
+where  P.PID=C.PID AND C.SID=S.SID
+and c.cost=(select max(c1.cost)
+from catalog c1 where c1.pid=p.pid);
+
